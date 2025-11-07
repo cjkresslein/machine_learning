@@ -2,7 +2,7 @@ import numpy as np
 
 class LinearRegression:
 
-    def __init__(self, lr, terminate_function="lossChange", threshold=0.01):
+    def __init__(self, lr=0.01, terminate_function="lossChange", threshold=0.01):
         self.alpha = lr
         self.w = None
         self.threshold = threshold
@@ -31,7 +31,7 @@ class LinearRegression:
         old_loss = args[2]
         return (abs(loss-old_loss)/old_loss) <= change_minimum
 
-    # fit model to data
+    # fit model to data with linear regression
     def fit(self, X_train, Y_train):
         # number of training samples
         x_size = np.size(X_train, axis=0)
@@ -70,21 +70,39 @@ class LinearRegression:
         print(f"final loss: {loss}")
         self.w = w
 
+    # fit model to data with Normal equation
+    def fit_normal(self, X_train, Y_train):
+        
+        # generate a square matrix with x
+        x_matrix = X_train.T @ X_train
+        
+        # check if the matrix is singluar (determinant near 0)
+        tolerance = 1e-9
+        if np.linalg.det(x_matrix) < tolerance:
+            raise "cannot use normal equation with singluar matrix"
+        
+        inv_x = np.linalg.inv(x_matrix)
+        xty = X_train.T @ Y_train
+        self.w = inv_x @ xty
+
+
     def predict(self, x):
         return self.w @ x
 
             
 
 x = np.array([
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9]
+    [1, 1000, 2],
+    [1, 1500, 3],
+    [1, 2000, 3],
+    [1, 2500, 4]
 ])
 
-y = np.array([6, 15, 24])
+y = np.array([180, 240, 310, 375])
 
-model = LinearRegression(lr=0.001, terminate_function="lossThreshold", threshold=0.05)
+model = LinearRegression()
 
-model.fit(x, y)
+model.fit_normal(x, y)
+print(model.w)
 
-print(model.predict(np.array([10, 11, 12])))
+print(model.predict(np.array([1, 1800, 3])))

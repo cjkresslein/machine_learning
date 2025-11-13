@@ -22,6 +22,12 @@ def labelEncode(data, column):
 def xy_split(data, y_column):
     y = pd.DataFrame(data[y_column])
     x = data.drop(columns=y_column)
+
+    # set index columns
+    x['index'] = x.index
+    x = x.set_index('index')
+    y['index'] = y.index
+    y = y.set_index('index')
     return x, y
 
 # separate x and y into training and testing data
@@ -30,30 +36,23 @@ def train_test_split(x, y, test_size=0.2):
     y_test = pd.DataFrame(columns=y.columns)
 
     # select random row indices for test
-    dataset_size = x.size
-    population = np.arange(dataset_size)
+    dataset_size = y.size
+    population = np.arange(0, dataset_size)
     test_indices = np.random.choice(population, int(dataset_size*test_size), replace=False)
 
     for index in test_indices:
         x_test.loc[len(x_test)] = x.iloc[index].copy()
         y_test.loc[len(y_test)] = y.iloc[index].copy()
 
-        index_to_drop = x.iloc[index].name # Get the index label of the 1st row
-        x = x.drop(index_to_drop)
-        y = y.drop(index_to_drop)
+    x = x.drop(test_indices)
+    y = y.drop(test_indices)
 
+    # reset the indices since rows have been dropped
+    x = x.reset_index(drop=True)
+    y = y.reset_index(drop=True)
+    x['index'] = x.index
+    x = x.set_index('index')
+    y['index'] = y.index
+    y = y.set_index('index')
 
     return (x, x_test, y, y_test)
-
-
-data = {
-    "column1": [1, 2, 3, 4, 5],
-    "column2": ["val1", "val2", "val2", "val1", "val1"]
-}
-
-df = pd.DataFrame(data)
-labelEncode(df, "column2")
-x, y = xy_split(df, "column2")
-x_train, x_test, y_train, y_test = train_test_split(x, y, 0.2)
-
-print(x_test)

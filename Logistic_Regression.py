@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 class LogisticRegression(GLM):
 
-    def __init__(self, lr=0.01, grad_norm=0.01):
-        super().__init__(lr, grad_norm)
+    def __init__(self):
+        super().__init__()
         self.b = None
 
     def link_function(self, x):
@@ -26,12 +26,12 @@ class LogisticRegression(GLM):
         b = np.ones(np.size(X_train, axis=0)).reshape(-1, 1)
         X_train = np.concatenate((X_train, b), axis=1)
     
-    def gradient_ascent(self, X_train, Y_train):
+    def gradient_ascent(self, X_train, Y_train, lr=0.01, grad_norm=0.1, normalize=False):
         # add intercept to X_train
         self.add_intercept(X_train)
 
         # call gradient ascent from GLM class
-        return super().gradient_ascent(X_train, Y_train)
+        return super().gradient_ascent(X_train, Y_train, lr, grad_norm, normalize)
     
     def predict(self, x):
         self.add_intercept(x)

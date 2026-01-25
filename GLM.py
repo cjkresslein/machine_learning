@@ -3,10 +3,10 @@ from scipy.special import expit
 
 class GLM:
 
-    def __init__(self, lr=0.01, grad_norm=0.01):
-        self.lr = lr
+    def __init__(self):
+        self.lr = None
         self.w = None
-        self.grad_norm = grad_norm
+        self.grad_norm = None
         self.train_mean = None
         self.train_std = None
 
@@ -22,11 +22,14 @@ class GLM:
 
         return (X_train - self.train_mean) / self.train_std
         
-    def gradient_ascent(self, X_train, Y_train):
+    def gradient_ascent(self, X_train, Y_train, lr = 0.01,  grad_norm=0.1, normalize=False):
+        self.lr = lr
+        self.grad_norm = grad_norm
 
         Y_train = Y_train.flatten()
 
-        X_train = self.normalize(X_train)
+        if(normalize):
+            X_train = self.normalize(X_train)
 
         # number of input parameters
         x_size = np.size(X_train, axis=1)

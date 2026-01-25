@@ -20,10 +20,11 @@ def labelEncode(data, column):
 
 # split data into x and y
 def xy_split(data, y_column):
+    # data is in a pandas dataframe
     y = pd.DataFrame(data[y_column])
     x = data.drop(columns=y_column)
-
-    # set index columns
+    
+    # give label "index" to index columns for x and y
     x['index'] = x.index
     x = x.set_index('index')
     y['index'] = y.index
